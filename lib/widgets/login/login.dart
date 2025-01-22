@@ -209,7 +209,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
-      _temporaryDevLogin(),
+      // _temporaryDevLogin(),
     ]);
   }
 
@@ -239,7 +239,7 @@ class _LoginScreenState extends State<LoginScreen> {
         builder: (BuildContext context) {
           return AlertDialog(
             backgroundColor: dialogBackgroundColor,
-            title: Text(
+            title: const Text(
               'Invalid Credentials',
               style: TextStyle(
                 color: dialogTextColor,
@@ -247,7 +247,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            content: Text(
+            content: const Text(
               'Login Failed. Please check the details entered and try again',
               style: TextStyle(
                 color: dialogTextColor,
@@ -259,7 +259,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 padding: const EdgeInsets.only(right: 8.0, bottom: 8.0),
                 child: TextButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: Text(
+                  child: const Text(
                     'OK',
                     style: TextStyle(
                       color: dialogButtonColor,

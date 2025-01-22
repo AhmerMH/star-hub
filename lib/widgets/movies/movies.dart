@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:dio/dio.dart';
-import 'package:starhub/services/credentials_service.dart';
 import 'package:starhub/services/iptv_service.dart';
 import 'package:starhub/widgets/base/base_screen.dart';
+import 'package:starhub/widgets/helpers/types/tmovie.dart';
+import 'package:starhub/widgets/helpers/widgets/categories-compact.dart';
+import 'package:starhub/widgets/loader/loader.dart';
 import 'package:starhub/widgets/movies/helpers/slider.dart';
+import 'package:starhub/widgets/movies/helpers/util.dart';
 
 class MoviesScreen extends StatefulWidget {
   const MoviesScreen({super.key});
@@ -13,9 +15,9 @@ class MoviesScreen extends StatefulWidget {
 }
 
 class _MoviesScreenState extends State<MoviesScreen> {
-  final _dio = Dio();
-  List<dynamic> _movies = [];
-  List<dynamic> _topMovies = [];
+  List<TMovie> _movies = [];
+  List<TMovie> _topMovies = [];
+  List<TCompactCategory<TMovie>> _categorizedMovies = [];
 
   @override
   void initState() {
@@ -26,10 +28,16 @@ class _MoviesScreenState extends State<MoviesScreen> {
   Future<void> _fetchTopMovies() async {
     try {
       _movies = await IptvService.fetchMovies();
-
+      final categories =
+          await IptvService.fetchCategories(type: CategoryType.movies);
       if (mounted) {
         setState(() {
-          _topMovies = _movies.take(5).toList();
+          _categorizedMovies = convertItemsPerCategory<TMovie>(
+            _movies,
+            categories,
+            (movie) => movie.categoryId,
+          );
+          _topMovies = _categorizedMovies[0].items.take(5).toList();
         });
       }
     } catch (e) {
@@ -39,14 +47,29 @@ class _MoviesScreenState extends State<MoviesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final itemsCount = _categorizedMovies.isEmpty
+        ? 2
+        : _categorizedMovies.length + 1; // +1 for the slider
     return BaseScreen(
       currentIndex: 0,
-      child: Container(
-        child: Column(
-          children: [
-            MovieSlider(movies: _topMovies),
-          ],
-        ),
+      child: ListView.builder(
+        itemCount: itemsCount,
+        itemBuilder: (context, index) {
+          if (index == 0) {
+            return MovieSlider(movies: _topMovies);
+          }
+          if (_categorizedMovies.isEmpty) {
+            return Container(height: 200, child:const Center(child: LoaderOverlay()));
+          } else {
+            final TCompactCategory<TMovie> compactCategory =
+                _categorizedMovies[index - 1];
+            return CategoriesCompact(
+              categoryName: compactCategory.category.name,
+              items: compactCategory.items,
+              type: CategoryType.movies,
+            );
+          }
+        },
       ),
     );
   }

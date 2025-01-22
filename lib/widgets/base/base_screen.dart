@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:starhub/widgets/epg/epg.dart';
+import 'package:starhub/widgets/livetv/live-tv.dart';
 import 'package:starhub/widgets/movies/movies.dart';
+import 'package:starhub/widgets/series/series.dart';
 import 'package:starhub/widgets/settings/settings.dart';
 
 // Colors for easy customization
@@ -87,21 +90,20 @@ class _BaseScreenState extends State<BaseScreen> {
                 backgroundColor: appBarColor,
                 selectedIndex: widget.currentIndex,
                 onDestinationSelected: (index) {
-                  if(index == 0) {
-                    // Settings index
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const MoviesScreen(),
-                      ),
-                    );
+                  if (index == 0) {
+                    navigateToOtherScreen(context, const MoviesScreen());
+                  } 
+                  else if (index == 1) {
+                    navigateToOtherScreen(context, const SeriesScreen());
                   }
-                  if (index == 4) {
-                    // Settings index
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const SettingsScreen(),
-                      ),
-                    );
+                  else if (index == 2) {
+                    navigateToOtherScreen(context, const LiveTvScreen());
+                  }
+                  else if (index == 3) {
+                    navigateToOtherScreen(context, const EpgScreen());
+                  }
+                  else if (index == 4) {
+                    navigateToOtherScreen(context, const SettingsScreen());
                   }
                 },
                 destinations: [
@@ -117,7 +119,7 @@ class _BaseScreenState extends State<BaseScreen> {
                   ),
                   NavigationDestination(
                     icon: Icon(
-                      Icons.tv,
+                      Icons.slow_motion_video,
                       size: iconSize,
                       color: widget.currentIndex == 1
                           ? selectedItemColor
@@ -163,5 +165,15 @@ class _BaseScreenState extends State<BaseScreen> {
         },
       ),
     );
+  }
+
+  void navigateToOtherScreen(BuildContext context, Widget screen) {
+    if (context.mounted) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => screen),
+        (route) => false,
+      );
+    }
   }
 }
