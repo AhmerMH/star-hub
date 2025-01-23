@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:starhub/widgets/helpers/widgets/bpp-video-player.dart';
 import 'package:starhub/widgets/loader/loader.dart';
 import '../../../services/iptv_service.dart';
 import '../../helpers/types/t-series.dart';
@@ -134,7 +135,10 @@ class _SeriesDetailsState extends State<SeriesDetails> {
                       // Title
                       Text(
                         seriesDetails!.name,
-                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineMedium
+                            ?.copyWith(
                               color: kTextColor,
                               fontWeight: FontWeight.bold,
                             ),
@@ -222,10 +226,25 @@ class _SeriesDetailsState extends State<SeriesDetails> {
                                   trailing: CircleAvatar(
                                     backgroundColor: Colors.transparent,
                                     child: IconButton(
-                                      icon: const Icon(Icons.play_circle_outline,
-                                          color: kTextColor, size: 32),
-                                      onPressed: () {
-                                        // Handle play button press
+                                      icon: const Icon(
+                                          Icons.play_circle_outline,
+                                          color: kTextColor,
+                                          size: 32),
+                                      onPressed: () async {
+                                        final streamUrl =
+                                            await episode.streamUrl;
+                                        if (mounted) {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  BPVideoPlayer(
+                                                streamUrl: streamUrl,
+                                                name: episode.title,
+                                              ),
+                                            ),
+                                          );
+                                        }
                                       },
                                     ),
                                   ),
@@ -257,5 +276,6 @@ class _SeriesDetailsState extends State<SeriesDetails> {
           ),
         ],
       ),
-    );  }
+    );
+  }
 }

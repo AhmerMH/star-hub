@@ -312,7 +312,8 @@ class IptvService {
     return series.map((series) => TSeries.fromJson(series)).toList();
   }
 
-  static Future<Map<String, dynamic>> getEpgDetails(String epgChannelId, String categoryId) async {
+  static Future<Map<String, dynamic>> getEpgDetails(
+      String epgChannelId, String categoryId) async {
     try {
       await loadCredentials();
       final response = await _dio.get(
@@ -332,5 +333,38 @@ class IptvService {
       debugPrint('Error fetching EPG details: $e');
       return {};
     }
+  }
+
+  static Future<Map<String, dynamic>> searchContent(String query) async {
+    final Map<String, dynamic> searchResults = {
+      'live': <TLiveChannel>[],
+      'movies': <TMovie>[],
+      'series': <TSeries>[],
+    };
+
+    final normalizedQuery = query.toLowerCase().trim();
+
+    // Search in Live TV channels
+    final List<TLiveChannel> liveChannels = await fetchLiveChannels();
+    searchResults['live'] = liveChannels
+        .where((TLiveChannel channel) =>
+            channel.name.toLowerCase().contains(normalizedQuery))
+        .toList();
+
+    // Search in Movies
+    final List<TMovie> movies = await fetchMovies();
+    searchResults['movies'] = movies
+        .where((TMovie movie) =>
+            movie.name.toLowerCase().contains(normalizedQuery))
+        .toList();
+
+    // Search in Series
+    final List<TSeries> series = await fetchSeries();
+    searchResults['series'] = series
+        .where(
+            (TSeries show) => show.name.toLowerCase().contains(normalizedQuery))
+        .toList();
+
+    return searchResults;
   }
 }

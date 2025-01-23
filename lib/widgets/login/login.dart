@@ -209,7 +209,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
-      // _temporaryDevLogin(),
+      _temporaryDevLogin(),
     ]);
   }
 

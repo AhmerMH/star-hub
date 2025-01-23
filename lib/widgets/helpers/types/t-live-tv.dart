@@ -55,8 +55,7 @@ class TLiveChannel {
     final password = credentials['password'];
     final serverUrl = credentials['serverUrl'];
 
-    liveStreamUrl = '$serverUrl/player_api.php?username=$username&password=$password&stream=$streamId&type=hls';
-        // '$serverUrl/live/$streamId.m3u8?username=$username&password=$password';
+    liveStreamUrl = '$serverUrl/live/$username/$password/$streamId.m3u8?username=$username&password=$password';
     return liveStreamUrl!;
   }
 }

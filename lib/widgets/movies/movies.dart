@@ -59,7 +59,7 @@ class _MoviesScreenState extends State<MoviesScreen> {
             return MovieSlider(movies: _topMovies);
           }
           if (_categorizedMovies.isEmpty) {
-            return Container(height: 200, child:const Center(child: LoaderOverlay()));
+            return SizedBox(height: 200, child:const Center(child: LoaderOverlay()));
           } else {
             final TCompactCategory<TMovie> compactCategory =
                 _categorizedMovies[index - 1];

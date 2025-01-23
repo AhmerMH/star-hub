@@ -51,8 +51,11 @@ class TMovie {
     if (movieStreamUrl != null) return movieStreamUrl!;
 
     final credentials = await IptvService.getSavedCredentials();
-    movieStreamUrl =
-        '${credentials['serverUrl']}/movie?username=${credentials['username']}&password=${credentials['password']}&stream_id=$streamId';
+    final username = credentials['username'];
+    final password = credentials['password'];
+    final server = credentials['serverUrl'];
+
+    movieStreamUrl = '$server/movie/$username/$password/$streamId.$containerExtension?username=$username&password=$password';
     return movieStreamUrl!;
   }
 
