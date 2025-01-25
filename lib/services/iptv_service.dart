@@ -1,8 +1,7 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:starhub/services/credentials_service.dart';
+import 'package:starhub/widgets/epg/helpers/t-epg.dart';
 import 'package:starhub/widgets/helpers/types/t-live-tv.dart';
 import 'package:starhub/widgets/helpers/types/t-series.dart';
 import 'package:starhub/widgets/helpers/types/tmovie.dart';
@@ -312,25 +311,160 @@ class IptvService {
     return series.map((series) => TSeries.fromJson(series)).toList();
   }
 
-  static Future<Map<String, dynamic>> getEpgDetails(String epgChannelId, String categoryId) async {
+  static Future<List<TEPG>> getEpgDetails(
+      String epgChannelId, String categoryId) async {
     try {
       await loadCredentials();
+      const url = '$serverUrl/player_api.php';
       final response = await _dio.get(
-        '$serverUrl/player_api.php',
+        url,
         queryParameters: {
           'username': username,
           'password': password,
           'action': 'get_simple_data_table',
           'stream_id': epgChannelId,
-          'category_id': categoryId
+        },
+        options: Options(
+          responseType: ResponseType.json,
+          sendTimeout: const Duration(seconds: 10),
+          receiveTimeout: const Duration(seconds: 10),
+        ),
+      );
+
+      final epgList = response.data?['epg_listings'];
+      if (epgList != null && epgList is List) {
+        return epgList.map((epg) => TEPG.fromJson(epg)).toList();
+      }
+
+      return [];
+    } catch (e) {
+      debugPrint('Error fetching EPG details: $e');
+      return [];
+    }
+  }
+
+  static Future<Map<String, dynamic>> searchContent(String query) async {
+    final Map<String, dynamic> searchResults = {
+      'live': <TLiveChannel>[],
+      'movies': <TMovie>[],
+      'series': <TSeries>[],
+    };
+
+    final normalizedQuery = query.toLowerCase().trim();
+
+    // Search in Live TV channels
+    final List<TLiveChannel> liveChannels = await fetchLiveChannels();
+    searchResults['live'] = liveChannels
+        .where((TLiveChannel channel) =>
+            channel.name.toLowerCase().contains(normalizedQuery))
+        .toList();
+
+    // Search in Movies
+    final List<TMovie> movies = await fetchMovies();
+    searchResults['movies'] = movies
+        .where((TMovie movie) =>
+            movie.name.toLowerCase().contains(normalizedQuery))
+        .toList();
+
+    // Search in Series
+    final List<TSeries> series = await fetchSeries();
+    searchResults['series'] = series
+        .where(
+            (TSeries show) => show.name.toLowerCase().contains(normalizedQuery))
+        .toList();
+
+    return searchResults;
+  }
+
+  static Future<void> addToFavorites({
+    required String itemId,
+    required CategoryType type,
+    required String action, // 'add' or 'remove'
+  }) async {
+    await loadCredentials();
+
+    String typeAction;
+    switch (type) {
+      case CategoryType.livetv:
+        typeAction = 'live';
+        break;
+      case CategoryType.series:
+        typeAction = 'series';
+        break;
+      case CategoryType.movies:
+        typeAction = 'movie';
+        break;
+    }
+
+    try {
+      await _dio.post(
+        '$serverUrl/player_api.php',
+        queryParameters: {
+          'username': username,
+          'password': password,
+          'action': '${action}_favorite',
+          'type': typeAction,
+          'stream_id': itemId,
         },
       );
 
-      final test = jsonEncode(response.data);
-      return response.data;
+      // Clear relevant cache to reflect changes
+      _cache.remove('favorites_$typeAction');
     } catch (e) {
-      debugPrint('Error fetching EPG details: $e');
-      return {};
+      debugPrint('Error managing favorites: $e');
+      throw Exception('Failed to manage favorites');
+    }
+  }
+
+  static Future<Map<String, dynamic>> getFavorites() async {
+    await loadCredentials();
+
+    final Map<String, dynamic> favorites = {
+      'live': <TLiveChannel>[],
+      'movies': <TMovie>[],
+      'series': <TSeries>[],
+    };
+
+    try {
+      // Fetch Live TV favorites
+      // final liveResponse = await _dio.get(
+      //   '$serverUrl/player_api.php',
+      //   queryParameters: {
+      //     'username': username,
+      //     'password': password,
+      //     'action': 'get_favorites',
+      //     'type': 'live',
+      //   },
+      // );
+      // favorites['live'] = parseLiveChannelsToTLiveChannel(liveResponse.data);
+
+      // Fetch Movie favorites
+      final movieResponse = await _dio.get(
+        '$serverUrl/player_api.php',
+        queryParameters: {
+          'username': username,
+          'password': password,
+          'action': 'get_all_favorites'
+        },
+      );
+      favorites['movies'] = parseMoviesToTMovie(movieResponse.data);
+
+      // Fetch Series favorites
+      final seriesResponse = await _dio.get(
+        '$serverUrl/player_api.php',
+        queryParameters: {
+          'username': username,
+          'password': password,
+          'action': 'get_favorites',
+          'type': 'series',
+        },
+      );
+      favorites['series'] = parseSeriesToTSeries(seriesResponse.data);
+
+      return favorites;
+    } catch (e) {
+      debugPrint('Error fetching favorites: $e');
+      return favorites;
     }
   }
 }

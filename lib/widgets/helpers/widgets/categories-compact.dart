@@ -9,6 +9,7 @@ class CategoriesCompact extends StatelessWidget {
   final String categoryName;
   final List<dynamic> items;
   final CategoryType type;
+  final bool noLimit;
   static const height = 180.0;
 
   const CategoriesCompact({
@@ -16,10 +17,15 @@ class CategoriesCompact extends StatelessWidget {
     required this.categoryName,
     required this.items,
     required this.type,
+    this.noLimit = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    if (items.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -78,7 +84,7 @@ class CategoriesCompact extends StatelessWidget {
           height: height, // Adjust based on your needs
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            itemCount: items.length > 10 ? 10 : items.length,
+            itemCount: noLimit ? items.length : (items.length > 10 ? 10 : items.length),
             padding: const EdgeInsets.symmetric(horizontal: 16),
             itemBuilder: (context, index) {
               dynamic item = items[index];

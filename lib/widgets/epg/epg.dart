@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:starhub/services/iptv_service.dart';
 import 'package:starhub/widgets/base/base_screen.dart';
+import 'package:starhub/widgets/epg/helpers/t-epg.dart';
 import 'package:starhub/widgets/helpers/types/t-live-tv.dart';
 import 'package:starhub/widgets/movies/helpers/util.dart';
 import 'package:starhub/widgets/loader/loader.dart';
@@ -11,6 +13,7 @@ const kPillBackgroundColor = Color(0xFF4A4A4A);
 const kSelectedPillColor = Color(0xFFE50914);
 const kChannelBackgroundColor = Color(0xFF3D3D3D); // Lighter gray
 const kTextColor = Colors.white;
+const kEpgDateColor = Colors.yellow;
 
 class EpgScreen extends StatefulWidget {
   const EpgScreen({super.key});
@@ -25,7 +28,7 @@ class _EpgScreenState extends State<EpgScreen> {
   String? error;
   int selectedCategoryIndex = 0;
   int selectedChannelIndex = 0;
-  Map<String, dynamic>? currentEpgData;
+  List<TEPG>? currentEpgData;
   bool isLoadingEpg = false;
 
   @override
@@ -89,7 +92,7 @@ class _EpgScreenState extends State<EpgScreen> {
       selectedChannelIndex = index;
     });
     final channel = _categorizedChannels![selectedCategoryIndex].items[index];
-    _loadEpgData(channel.epgChannelId, channel.categoryId);
+    _loadEpgData(channel.streamId.toString(), channel.categoryId);
   }
 
   Widget _buildEpgContent() {
@@ -109,25 +112,69 @@ class _EpgScreenState extends State<EpgScreen> {
       );
     }
 
-    return const Center(
-      child: Text(
-        'No EPG data available',
-        style: TextStyle(
-          color: kTextColor,
-          fontSize: 18,
-        ),
-      ),
+    return ListView.builder(
+      padding: const EdgeInsets.all(16.0),
+      itemCount: currentEpgData!.length,
+      itemBuilder: (context, index) {
+        final epg = currentEpgData![index];
+        return Container(
+          margin: const EdgeInsets.only(bottom: 16),
+          decoration: BoxDecoration(
+            color: Colors.black,
+            border: Border.all(color: Colors.white),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                epg.title,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              RichText(
+                text: TextSpan(
+                  children: [
+                    const TextSpan(
+                      text: 'Start: ',
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
+                    TextSpan(
+                      text: DateFormat('MMMM d, y, h:mm a').format(epg.start),
+                      style: const TextStyle(color: kEpgDateColor),
+                    ),
+                  ],
+                ),
+              ),
+              RichText(
+                text: TextSpan(
+                  children: [
+                    const TextSpan(
+                      text: 'End: ',
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
+                    TextSpan(
+                      text: DateFormat('MMMM d, y, h:mm a').format(epg.end),
+                      style: const TextStyle(color: kEpgDateColor),
+                    ),
+                  ],
+                ),
+              ),              const SizedBox(height: 8),
+              if (epg.description != '')
+                Text(
+                  'Description: ${epg.description}',
+                  style: const TextStyle(color: Colors.white),
+                ),
+            ],
+          ),
+        );
+      },
     );
-    // return Padding(
-    //   padding: EdgeInsets.all(16.0),
-    //   child: Column(
-    //     crossAxisAlignment: CrossAxisAlignment.start,
-    //     children: [
-    //       // Display EPG data here
-    //       // You can format and show the EPG information as needed
-    //     ],
-    //   ),
-    // );
   }
 
   Widget _buildErrorView() {
@@ -195,10 +242,17 @@ class _EpgScreenState extends State<EpgScreen> {
                             return Padding(
                               padding: const EdgeInsets.only(right: 8),
                               child: GestureDetector(
-                                onTap: () => setState(() {
-                                  selectedCategoryIndex = index;
-                                  selectedChannelIndex = 0;
-                                }),
+                                onTap: () {
+                                  setState(() {
+                                    selectedCategoryIndex = index;
+                                    selectedChannelIndex = 0;
+                                  });
+                                  // Fetch EPG for the first channel in the new category
+                                  final firstChannel =
+                                      _categorizedChannels![index].items[0];
+                                  _loadEpgData(firstChannel.streamId.toString(),
+                                      firstChannel.categoryId);
+                                },
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 20,

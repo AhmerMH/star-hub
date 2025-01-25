@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
 
 final Color loaderColor = Colors.red[900]!;
 
@@ -9,9 +10,9 @@ class LoaderOverlay extends StatefulWidget {
   State<LoaderOverlay> createState() => _LoaderOverlayState();
 }
 
-class _LoaderOverlayState extends State<LoaderOverlay> with SingleTickerProviderStateMixin {
+class _LoaderOverlayState extends State<LoaderOverlay>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  int currentDot = 0;
 
   @override
   void initState() {
@@ -19,12 +20,7 @@ class _LoaderOverlayState extends State<LoaderOverlay> with SingleTickerProvider
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1500),
-    )..addListener(() {
-        setState(() {
-          currentDot = (_controller.value * 5).floor();
-        });
-      });
-
+    );
     _controller.repeat();
   }
 
@@ -36,14 +32,11 @@ class _LoaderOverlayState extends State<LoaderOverlay> with SingleTickerProvider
 
   @override
   Widget build(BuildContext context) {
-    // Get screen size
     final size = MediaQuery.of(context).size;
     final isLargeScreen = size.width > 600 || size.height > 600;
-    
-    // Calculate responsive dimensions
-    final dotWidth = isLargeScreen ? 12.0 : 8.0;
-    final dotHeight = isLargeScreen ? 12.0 : 8.0;
-    final expandedHeight = isLargeScreen ? 42.0 : 24.0;
+
+    final dotWidth = 7.0;
+    final dotHeight = 10.0;
     const dotSpacing = 4.0;
 
     return Container(
@@ -52,17 +45,24 @@ class _LoaderOverlayState extends State<LoaderOverlay> with SingleTickerProvider
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: List.generate(5, (index) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: dotSpacing),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 100),
-                width: dotWidth,
-                height: currentDot == index ? expandedHeight : dotHeight,
-                decoration: BoxDecoration(
-                  color: loaderColor,
-                  borderRadius: BorderRadius.circular(dotWidth / 2),
-                ),
-              ),
+            return AnimatedBuilder(
+              animation: _controller,
+              builder: (context, child) {
+                final wave =
+                    sin((_controller.value * 2 * pi) + (index * pi / -8));
+                final height = dotHeight + (wave * 20).abs();
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: dotSpacing),
+                  child: Container(
+                    width: dotWidth,
+                    height: height,
+                    decoration: BoxDecoration(
+                      color: loaderColor,
+                      borderRadius: BorderRadius.circular(dotWidth / 2),
+                    ),
+                  ),
+                );
+              },
             );
           }),
         ),

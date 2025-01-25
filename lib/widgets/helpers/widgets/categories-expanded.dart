@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:starhub/services/iptv_service.dart';
+import 'package:starhub/widgets/helpers/widgets/bpp-video-player.dart';
 import 'package:starhub/widgets/helpers/widgets/tile.dart';
 
 const Color fontColor = Colors.white;
@@ -75,65 +76,91 @@ class CategoriesExpanded extends StatelessWidget {
           child: FutureBuilder<String>(
             future: item!.streamUrl,
             builder: (context, snapshot) {
-              return Container(
-                decoration: BoxDecoration(
-                  color: backgroundListItem,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  children: [
-                    // Left column - Icon
-                    Container(
-                      width: 84,
-                      height: 80,
-                      padding: const EdgeInsets.all(8),
-                      child: Image.network(
-                        item.streamIcon,
-                        fit: BoxFit.contain,
-                        errorBuilder: (_, __, ___) => const Icon(
-                          Icons.tv,
-                          color: fontColor,
-                          size: 40,
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => BPVideoPlayer(
+                                streamUrl: snapshot.data ?? '',
+                                name: item.name,
+                                isLiveTV: type == CategoryType.livetv,
+                                channels: type == CategoryType.livetv ? items : null,
+                                selectedChannelIndex:
+                                    type == CategoryType.livetv ? index : null,
+                              ),
+                            ),
+                          );
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: backgroundListItem,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    children: [
+                      // Existing content remains the same
+                      Container(
+                        width: 84,
+                        height: 80,
+                        padding: const EdgeInsets.all(8),
+                        child: Image.network(
+                          item.streamIcon,
+                          fit: BoxFit.contain,
+                          errorBuilder: (_, __, ___) => const Icon(
+                            Icons.tv,
+                            color: fontColor,
+                            size: 40,
+                          ),
                         ),
                       ),
-                    ),
-
-                    // Middle column - Title and Date
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            item.name,
-                            style: const TextStyle(
-                              color: fontColor,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              item.name,
+                              style: const TextStyle(
+                                color: fontColor,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Added: ${DateTime.now().toString().split(' ')[0]}',
-                            style: TextStyle(
-                              color: fontColor.withOpacity(0.7),
-                              fontSize: 14,
+                            const SizedBox(height: 4),
+                            Text(
+                              'Added: ${DateTime.now().toString().split(' ')[0]}',
+                              style: TextStyle(
+                                color: fontColor.withOpacity(0.7),
+                                fontSize: 14,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-
-                    IconButton(
-                      icon: const Icon(Icons.play_circle_outline),
-                      color: fontColor,
-                      iconSize: 32,
-                      onPressed: () {
-                        // Your existing navigation logic
-                      },
-                    ),
-                  ],
+                      IconButton(
+                        icon: const Icon(Icons.play_circle_outline),
+                        color: fontColor,
+                        iconSize: 32,
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => BPVideoPlayer(
+                                streamUrl: snapshot.data ?? '',
+                                name: item.name,
+                                isLiveTV: type == CategoryType.livetv,
+                                channels: type == CategoryType.livetv ? items : null,
+                                selectedChannelIndex:
+                                    type == CategoryType.livetv ? index : null,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               );
             },

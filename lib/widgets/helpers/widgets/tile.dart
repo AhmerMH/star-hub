@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:starhub/services/iptv_service.dart';
-import 'package:starhub/widgets/helpers/widgets/vlc-video-player.dart';
+import 'package:starhub/widgets/helpers/widgets/bpp-video-player.dart';
 import 'package:starhub/widgets/movies/helpers/movie-detail.dart';
 import 'package:starhub/widgets/series/helpers/series-details.dart';
 
@@ -16,6 +16,7 @@ class Tile extends StatelessWidget {
   final CategoryType type;
   final String imageUrl;
   final bool horizontal;
+  final Function()? customOnTap;
 
   const Tile({
     super.key,
@@ -25,36 +26,46 @@ class Tile extends StatelessWidget {
     required this.type,
     required this.imageUrl,
     this.horizontal = false,
+    this.customOnTap,
   });
 
-  void onTap(BuildContext context) async {
+  void onTap(BuildContext context) {
+    if (customOnTap != null) {
+      customOnTap!();
+      return;
+    }
+
     if (type == CategoryType.movies) {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) =>
-              MovieDetailsScreen(streamId: streamId, name: name),
+          builder: (context) => MovieDetailsScreen(
+            streamId: streamId,
+            name: name,
+            streamUrl: streamUrl,
+          ),
         ),
       );
-    } else if(type == CategoryType.series) {
+    } else if (type == CategoryType.series) {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) =>
-              SeriesDetails(streamId: streamId),
+          builder: (context) => SeriesDetails(streamId: streamId),
         ),
       );
-    } else if(type == CategoryType.livetv) {
+    } else if (type == CategoryType.livetv) {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) =>
-              BPVideoPlayer(streamUrl: streamUrl, name: name),
+          builder: (context) => BPVideoPlayer(
+            streamUrl: streamUrl,
+            name: name,
+            isLiveTV: true,
+          ),
         ),
       );
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return Focus(

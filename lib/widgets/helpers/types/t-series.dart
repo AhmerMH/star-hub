@@ -1,3 +1,5 @@
+import 'package:starhub/services/iptv_service.dart';
+
 class TSeries {
   final String name;
   final String streamIcon;
@@ -23,6 +25,15 @@ class TSeries {
   int get streamId => int.parse(seriesId);
 
   Future<String> get streamUrl => Future.value('');
+
+  Map<String, dynamic> toJson() {
+  return {
+    'num': num,
+    'name': name,
+    'series_id': streamId,
+    'category_id': categoryId,
+  };
+}
 }
 
 class Episode {
@@ -32,6 +43,7 @@ class Episode {
   final String plot;
   final String duration;
   final String cover;
+  String? episodeStreamUrl;
 
   Episode({
     required this.id,
@@ -51,6 +63,18 @@ class Episode {
       duration: json['info']?['duration'] ?? '',
       cover: json['info']?['movie_image'] ?? '',
     );
+  }
+
+  Future<String> get streamUrl async {
+    if (episodeStreamUrl != null) return episodeStreamUrl!;
+
+    final credentials = await IptvService.getSavedCredentials();
+    final username = credentials['username'];
+    final password = credentials['password'];
+    final serverUrl = credentials['serverUrl'];
+
+    episodeStreamUrl = '$serverUrl/series/$username/$password/$id.$extension?username=$username&password=$password';
+    return episodeStreamUrl!;
   }
 }
 

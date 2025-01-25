@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:starhub/widgets/epg/epg.dart';
 import 'package:starhub/widgets/livetv/live-tv.dart';
 import 'package:starhub/widgets/movies/movies.dart';
+import 'package:starhub/widgets/search/search.dart';
 import 'package:starhub/widgets/series/series.dart';
 import 'package:starhub/widgets/settings/settings.dart';
 
@@ -62,17 +63,30 @@ class _BaseScreenState extends State<BaseScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.search, color: appBarIconColor),
+            icon: const Icon(
+              Icons.search,
+              color: appBarIconColor,
+            ),
             onPressed: () {
-              // Search functionality
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const SearchScreen(),
+                ),
+              );
             },
           ),
-          IconButton(
-            icon: const Icon(Icons.favorite, color: appBarIconColor),
-            onPressed: () {
-              // Favorites functionality
-            },
-          ),
+          // IconButton(
+          //   icon: const Icon(Icons.favorite, color: appBarIconColor),
+          //   onPressed: () {
+          //     Navigator.push(
+          //       context,
+          //       MaterialPageRoute(
+          //         builder: (context) => const FavoritesScreen(),
+          //       ),
+          //     );
+          //   },
+          // ),
           const SizedBox(width: 8),
         ],
       ),
@@ -80,7 +94,6 @@ class _BaseScreenState extends State<BaseScreen> {
       bottomNavigationBar: LayoutBuilder(
         builder: (context, constraints) {
           final isTV = MediaQuery.of(context).size.width > 1200;
-          const textStyle = TextStyle(fontSize: 16);
           const iconSize = 26.0;
           return Theme(
             data: ThemeData(
@@ -92,17 +105,13 @@ class _BaseScreenState extends State<BaseScreen> {
                 onDestinationSelected: (index) {
                   if (index == 0) {
                     navigateToOtherScreen(context, const MoviesScreen());
-                  } 
-                  else if (index == 1) {
+                  } else if (index == 1) {
                     navigateToOtherScreen(context, const SeriesScreen());
-                  }
-                  else if (index == 2) {
+                  } else if (index == 2) {
                     navigateToOtherScreen(context, const LiveTvScreen());
-                  }
-                  else if (index == 3) {
+                  } else if (index == 3) {
                     navigateToOtherScreen(context, const EpgScreen());
-                  }
-                  else if (index == 4) {
+                  } else if (index == 4) {
                     navigateToOtherScreen(context, const SettingsScreen());
                   }
                 },

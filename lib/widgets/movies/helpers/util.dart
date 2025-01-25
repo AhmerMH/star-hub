@@ -18,7 +18,7 @@ List<TCompactCategory<T>> convertItemsPerCategory<T>(List<T> items,
   // Group items by category ID
   for (var item in items) {
     // Skip live TV items with missing stream icons
-    if (item is TLiveChannel && (item.streamIcon == null || item.streamIcon.isEmpty)) {
+    if (item is TLiveChannel && (item.streamIcon.isEmpty)) {
       continue;
     }
     

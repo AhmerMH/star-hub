@@ -47,7 +47,7 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
           icon: const Icon(Icons.arrow_back, color: appBarIconColor),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Text(
+        title: const Text(
           'Account Info',
           style: TextStyle(
             color: appBarTextColor,
@@ -84,7 +84,7 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
                 ],
               ),
               child: Padding(
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
                     _buildInfoTile(

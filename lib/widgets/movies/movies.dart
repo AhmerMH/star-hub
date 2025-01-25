@@ -18,6 +18,7 @@ class _MoviesScreenState extends State<MoviesScreen> {
   List<TMovie> _movies = [];
   List<TMovie> _topMovies = [];
   List<TCompactCategory<TMovie>> _categorizedMovies = [];
+  String? error;
 
   @override
   void initState() {
@@ -28,10 +29,10 @@ class _MoviesScreenState extends State<MoviesScreen> {
   Future<void> _fetchTopMovies() async {
     try {
       _movies = await IptvService.fetchMovies();
-      final categories =
-          await IptvService.fetchCategories(type: CategoryType.movies);
+      final categories = await IptvService.fetchCategories(type: CategoryType.movies);
       if (mounted) {
         setState(() {
+          error = null;
           _categorizedMovies = convertItemsPerCategory<TMovie>(
             _movies,
             categories,
@@ -41,36 +42,67 @@ class _MoviesScreenState extends State<MoviesScreen> {
         });
       }
     } catch (e) {
-      print('Error fetching movies: $e');
+      if (mounted) {
+        setState(() {
+          error = 'Failed to load movies';
+        });
+      }
     }
+  }
+
+  Widget _buildErrorView() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(
+            Icons.error_outline,
+            color: Colors.white,
+            size: 48,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            error!,
+            style: const TextStyle(color: Colors.white),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: _fetchTopMovies,
+            child: const Text('Retry'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final itemsCount = _categorizedMovies.isEmpty
-        ? 2
-        : _categorizedMovies.length + 1; // +1 for the slider
     return BaseScreen(
       currentIndex: 0,
-      child: ListView.builder(
-        itemCount: itemsCount,
-        itemBuilder: (context, index) {
-          if (index == 0) {
-            return MovieSlider(movies: _topMovies);
-          }
-          if (_categorizedMovies.isEmpty) {
-            return Container(height: 200, child:const Center(child: LoaderOverlay()));
-          } else {
-            final TCompactCategory<TMovie> compactCategory =
-                _categorizedMovies[index - 1];
-            return CategoriesCompact(
-              categoryName: compactCategory.category.name,
-              items: compactCategory.items,
-              type: CategoryType.movies,
-            );
-          }
-        },
-      ),
+      child: error != null
+          ? _buildErrorView()
+          : ListView.builder(
+              itemCount: _categorizedMovies.isEmpty ? 2 : _categorizedMovies.length + 1,
+              itemBuilder: (context, index) {
+                if (index == 0) {
+                  return MovieSlider(movies: _topMovies);
+                }
+                if (_categorizedMovies.isEmpty) {
+                  return SizedBox(height: 200, child: const Center(child: LoaderOverlay()));
+                } else {
+                  final TCompactCategory<TMovie> compactCategory = _categorizedMovies[index - 1];
+                  return CategoriesCompact(
+                    categoryName: compactCategory.category.name,
+                    items: compactCategory.items,
+                    type: CategoryType.movies,
+                  );
+                }
+              },
+            ),
     );
   }
 }

@@ -26,7 +26,6 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  bool _isLoading = true;
   bool _autoLoginFailed = false;
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -68,11 +67,7 @@ class _LoginScreenState extends State<LoginScreen> {
           builder: (context) => const MoviesScreen(),
         ),
       );
-    } else {
-      setState(() {
-        _isLoading = false;
-      });
-    }
+    } 
   }
 
   @override
@@ -209,7 +204,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
-      // _temporaryDevLogin(),
+      _temporaryDevLogin(),
     ]);
   }
 

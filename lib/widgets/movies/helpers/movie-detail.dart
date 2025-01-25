@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:starhub/services/iptv_service.dart';
 import 'package:starhub/widgets/helpers/types/tmovie.dart';
+import 'package:starhub/widgets/helpers/widgets/bpp-video-player.dart';
 import 'package:starhub/widgets/loader/loader.dart';
 
 class MovieDetailsScreen extends StatefulWidget {
   final int streamId;
   final String name;
+  final String streamUrl;
 
   const MovieDetailsScreen({
     super.key,
     required this.streamId,
     required this.name,
+    required this.streamUrl,
   });
 
   @override
@@ -23,8 +26,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
   @override
   void initState() {
     super.initState();
-    _movieDetailsFuture =
-        IptvService.getMovieDetails(widget.streamId);
+    _movieDetailsFuture = IptvService.getMovieDetails(widget.streamId);
   }
 
   Widget _buildRatingStars(String rating) {
@@ -139,7 +141,15 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                           child: FloatingActionButton.extended(
                             backgroundColor: Colors.red[900],
                             onPressed: () {
-                              // Add play functionality here
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => BPVideoPlayer(
+                                    streamUrl: widget.streamUrl,
+                                    name: movie.name,
+                                  ),
+                                ),
+                              );
                             },
                             icon: const Text(
                               'Play',
