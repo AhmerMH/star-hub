@@ -55,7 +55,8 @@ class TMovie {
     final password = credentials['password'];
     final server = credentials['serverUrl'];
 
-    movieStreamUrl = '$server/movie/$username/$password/$streamId.$containerExtension?username=$username&password=$password';
+    movieStreamUrl =
+        '$server/movie/$username/$password/$streamId.$containerExtension?username=$username&password=$password';
     return movieStreamUrl!;
   }
 
@@ -75,6 +76,7 @@ class TMovie {
       'direct_source': directSource,
     };
   }
+
 }
 
 class TMovieDetail {
@@ -123,24 +125,24 @@ class TMovieDetail {
     final movieData = json['movie_data'];
 
     return TMovieDetail(
-      name: info['name'] ?? '',
-      rating: info['rating'] ?? '',
-      releaseDate: info['releasedate'] ?? '',
-      genre: info['genre'] ?? '',
-      cast: info['cast'] ?? '',
-      plot: info['plot'] ?? '',
-      youtubeTrailer: info['youtube_trailer'] ?? '',
-      cover: info['cover_big'] ?? '',
-      duration: info['duration'] ?? '',
-      country: info['country'] ?? '',
-      director: info['director'] ?? '',
-      tmdbUrl: info['kinopoisk_url'] ?? '',
+      name: info['name'].toString(),
+      rating: info['rating'].toString(),
+      releaseDate: info['releasedate'].toString(),
+      genre: info['genre'].toString(),
+      cast: info['cast'].toString(),
+      plot: info['plot'].toString(),
+      youtubeTrailer: info['youtube_trailer'].toString(),
+      cover: info['cover_big'].toString(),
+      duration: info['duration'].toString(),
+      country: info['country'].toString(),
+      director: info['director'].toString(),
+      tmdbUrl: info['kinopoisk_url'].toString(),
       streamId: movieData['stream_id'] ?? 0,
-      added: movieData['added'] ?? '',
-      categoryId: movieData['category_id'] ?? '',
-      containerExtension: movieData['container_extension'] ?? '',
-      customSid: movieData['custom_sid'] ?? '',
-      directSource: movieData['direct_source'] ?? '',
+      added: movieData['added'].toString(),
+      categoryId: movieData['category_id'].toString(),
+      containerExtension: movieData['container_extension'].toString(),
+      customSid: movieData['custom_sid'].toString(),
+      directSource: movieData['direct_source'].toString(),
     );
   }
 }

@@ -26,6 +26,14 @@ class TSeries {
 
   Future<String> get streamUrl => Future.value('');
 
+  Map<String, dynamic> toJson() {
+  return {
+    'num': num,
+    'name': name,
+    'series_id': streamId,
+    'category_id': categoryId,
+  };
+}
 }
 
 class Episode {

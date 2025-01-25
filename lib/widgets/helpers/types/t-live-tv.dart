@@ -33,16 +33,16 @@ class TLiveChannel {
   factory TLiveChannel.fromJson(Map<String, dynamic> json) {
     return TLiveChannel(
       num: json['num'] ?? 0,
-      name: json['name'] ?? '',
-      streamType: json['stream_type'] ?? '',
       streamId: json['stream_id'] ?? 0,
-      streamIcon: json['stream_icon'] ?? '',
-      epgChannelId: json['epg_channel_id'] ?? '',
-      added: json['added'] ?? '',
-      categoryId: json['category_id'] ?? '',
-      customSid: json['custom_sid'] ?? '',
       tvArchive: json['tv_archive'] ?? 0,
-      directSource: json['direct_source'] ?? '',
+      name: json['name'].toString(),
+      streamType: json['stream_type'].toString(),
+      streamIcon: json['stream_icon'].toString(),
+      epgChannelId: json['epg_channel_id'].toString(),
+      added: json['added'].toString(),
+      categoryId: json['category_id'].toString(),
+      customSid: json['custom_sid'].toString(),
+      directSource: json['direct_source'].toString(),
       tvArchiveDuration: json['tv_archive_duration'].toString(),
     );
   }
@@ -55,7 +55,25 @@ class TLiveChannel {
     final password = credentials['password'];
     final serverUrl = credentials['serverUrl'];
 
-    liveStreamUrl = '$serverUrl/live/$username/$password/$streamId.m3u8?username=$username&password=$password';
+    liveStreamUrl =
+        '$serverUrl/live/$username/$password/$streamId.m3u8?username=$username&password=$password';
     return liveStreamUrl!;
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'num': num,
+      'name': name,
+      'stream_type': streamType,
+      'stream_id': streamId,
+      'stream_icon': streamIcon,
+      'epg_channel_id': epgChannelId,
+      'added': added,
+      'category_id': categoryId,
+      'custom_sid': customSid,
+      'tv_archive': tvArchive,
+      'direct_source': directSource,
+      'tv_archive_duration': tvArchiveDuration,
+    };
   }
 }

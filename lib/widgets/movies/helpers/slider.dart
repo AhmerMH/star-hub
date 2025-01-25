@@ -143,99 +143,99 @@ class _MovieSliderState extends State<MovieSlider> {
                 ),
               ),
               padding: const EdgeInsets.all(paddingSize),
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      BackdropFilter(
-                    filter:
-                        ImageFilter.blur(sigmaX: blurEffect, sigmaY: blurEffect),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: movie?.streamIcon != null
-                              ? NetworkImage(movie?.streamIcon)
-                              : const AssetImage(
-                                      'assets/images/slider_placeholder.jpg')
-                                  as ImageProvider,
-                          fit: BoxFit.cover,
-                          colorFilter: ColorFilter.mode(
-                            imageBlurColor,
-                            BlendMode.overlay,
+              child: LayoutBuilder(builder: (context, constraints) {
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    BackdropFilter(
+                      filter: ImageFilter.blur(
+                          sigmaX: blurEffect, sigmaY: blurEffect),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: movie?.streamIcon != null
+                                ? NetworkImage(movie?.streamIcon)
+                                : const AssetImage(
+                                        'assets/images/slider_placeholder.jpg')
+                                    as ImageProvider,
+                            fit: BoxFit.cover,
+                            colorFilter: ColorFilter.mode(
+                              imageBlurColor,
+                              BlendMode.overlay,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                      Flexible(
-                        child: Text(
-                          movie?.name ?? '',
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            color: titleTextColor,
-                            fontSize: titleFontSize,
-                            fontWeight: FontWeight.bold,
-                          ),
+                    Flexible(
+                      child: Text(
+                        movie?.name ?? '',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: titleTextColor,
+                          fontSize: titleFontSize,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(height: buttonSpacing),
-                      movie?.name != null
-                          ? Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                FloatingActionButton.extended(
-                                  heroTag: 'favorite_${movie?.streamId ?? 0}',
-                                  onPressed: () {
-                                    // Favorite functionality
-                                  },
-                                  backgroundColor: Colors.transparent,
-                                  label: const Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(Icons.favorite_border,
-                                          color: favoriteButtonIconColor),
-                                      Text('Favorite',
-                                          style: TextStyle(
-                                              color: favoriteButtonTextColor,
-                                              fontSize: 12)),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(width: buttonSpacing),
-                                FloatingActionButton.extended(
-                                  heroTag: 'play_${movie?.streamId ?? 0}',
-                                  onPressed: () async {
-                                    final streamUrl = await movie.streamUrl;
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => BPVideoPlayer(
-                                          streamUrl: streamUrl,
-                                          name: movie.name,
-                                        ),
+                    ),
+                    const SizedBox(height: buttonSpacing),
+                    movie?.name != null
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              // FloatingActionButton.extended(
+                              //   heroTag: 'favorite_${movie?.streamId ?? 0}',
+                              //   onPressed: () {
+                              //     // Favorite functionality
+                              //   },
+                              //   backgroundColor: Colors.transparent,
+                              //   label: const Column(
+                              //     mainAxisSize: MainAxisSize.min,
+                              //     children: [
+                              //       Icon(Icons.favorite_border,
+                              //           color: favoriteButtonIconColor),
+                              //       Text('Favorite',
+                              //           style: TextStyle(
+                              //               color: favoriteButtonTextColor,
+                              //               fontSize: 12)),
+                              //     ],
+                              //   ),
+                              // ),
+                              const SizedBox(width: buttonSpacing),
+                              FloatingActionButton.extended(
+                                heroTag: 'play_${movie?.streamId ?? 0}',
+                                onPressed: () async {
+                                  final streamUrl = await movie.streamUrl;
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => BPVideoPlayer(
+                                        streamUrl: streamUrl,
+                                        name: movie.name,
                                       ),
-                                    );
-                                  },
-                                  backgroundColor: playButtonColor,
-                                  icon: const Text('Play',
-                                      style: TextStyle(color: playButtonTextColor)),
-                                  label: const Icon(Icons.play_circle,
-                                      color: playButtonIconColor),
-                                ),
-                              ],
-                            )
-                          : const SizedBox(
-                              height: 10,
-                              child: HLoaderOverlay(),
-                            ),
-                    ],
-                  );
-                }
-              ),
+                                    ),
+                                  );
+                                },
+                                backgroundColor: playButtonColor,
+                                icon: const Text('Play',
+                                    style:
+                                        TextStyle(color: playButtonTextColor)),
+                                label: const Icon(Icons.play_circle,
+                                    color: playButtonIconColor),
+                              ),
+                            ],
+                          )
+                        : const SizedBox(
+                            height: 10,
+                            child: HLoaderOverlay(),
+                          ),
+                  ],
+                );
+              }),
             ),
-          );      },
+          );
+        },
       ),
     );
   }

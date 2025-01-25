@@ -193,67 +193,63 @@ class _SeriesDetailsState extends State<SeriesDetails> {
                         ),
                         child: ListView.builder(
                           padding: EdgeInsets.zero,
-                          itemCount: seriesDetails!
-                              .seasons[selectedSeasonIndex].episodes.length,
+                          itemCount: seriesDetails!.seasons[selectedSeasonIndex].episodes.length,
                           itemBuilder: (context, index) {
-                            final episode = seriesDetails!
-                                .seasons[selectedSeasonIndex].episodes[index];
+                            final episode = seriesDetails!.seasons[selectedSeasonIndex].episodes[index];
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 10),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: kEpisodeBackgroundColor,
-                                  border: Border.all(color: kBorderColor),
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                child: ListTile(
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 4,
+                              child: InkWell(
+                                onTap: () async {
+                                  final streamUrl = await episode.streamUrl;
+                                  if (mounted) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => BPVideoPlayer(
+                                          streamUrl: streamUrl,
+                                          name: episode.title,
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: kEpisodeBackgroundColor,
+                                    border: Border.all(color: kBorderColor),
+                                    borderRadius: BorderRadius.circular(16),
                                   ),
-                                  title: Text(
-                                    episode.title,
-                                    style: const TextStyle(
-                                        color: kTextColor,
-                                        fontWeight: FontWeight.w500),
-                                  ),
-                                  subtitle: Text(
-                                    'Duration: ${episode.duration}',
-                                    style: const TextStyle(
-                                        color: kTextColor,
-                                        fontWeight: FontWeight.w500),
-                                  ),
-                                  trailing: CircleAvatar(
-                                    backgroundColor: Colors.transparent,
-                                    child: IconButton(
-                                      icon: const Icon(
-                                          Icons.play_circle_outline,
+                                  child: ListTile(
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 4,
+                                    ),
+                                    title: Text(
+                                      episode.title,
+                                      style: const TextStyle(
                                           color: kTextColor,
-                                          size: 32),
-                                      onPressed: () async {
-                                        final streamUrl =
-                                            await episode.streamUrl;
-                                        if (mounted) {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  BPVideoPlayer(
-                                                streamUrl: streamUrl,
-                                                name: episode.title,
-                                              ),
-                                            ),
-                                          );
-                                        }
-                                      },
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                    subtitle: Text(
+                                      'Duration: ${episode.duration}',
+                                      style: const TextStyle(
+                                          color: kTextColor,
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                    trailing: const CircleAvatar(
+                                      backgroundColor: Colors.transparent,
+                                      child: Icon(
+                                        Icons.play_circle_outline,
+                                        color: kTextColor,
+                                        size: 32,
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
                             );
                           },
-                        ),
-                      ),
+                        ),                      ),
                     ],
                   ),
                 ),

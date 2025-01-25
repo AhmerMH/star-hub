@@ -58,19 +58,37 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
 
     return BaseScreen(
       currentIndex: 2,
-      child: _categorizedChannels.isEmpty
-          ? const LoaderOverlay()
-          : ListView.builder(
-              itemCount: _categorizedChannels.length,
-              itemBuilder: (context, index) {
-                final category = _categorizedChannels[index];
-                return CategoriesCompact(
-                  categoryName: category.category.name,
-                  items: category.items,
-                  type: CategoryType.livetv,
-                );
-              },
-            ),
-    );
-  }
+      child: error != null
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(error ?? 'An error occurred',
+                      style: const TextStyle(color: fontColor)),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      foregroundColor: Colors.white,
+                    ),
+                    onPressed: _loadData,
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            )
+          : _categorizedChannels.isEmpty
+              ? const LoaderOverlay()
+              : ListView.builder(
+                  itemCount: _categorizedChannels.length,
+                  itemBuilder: (context, index) {
+                    final category = _categorizedChannels[index];
+                    return CategoriesCompact(
+                      categoryName: category.category.name,
+                      items: category.items,
+                      type: CategoryType.livetv,
+                    );
+                  },
+                ),
+    );  }
 }

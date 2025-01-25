@@ -16,6 +16,7 @@ class Tile extends StatelessWidget {
   final CategoryType type;
   final String imageUrl;
   final bool horizontal;
+  final Function()? customOnTap;
 
   const Tile({
     super.key,
@@ -25,9 +26,15 @@ class Tile extends StatelessWidget {
     required this.type,
     required this.imageUrl,
     this.horizontal = false,
+    this.customOnTap,
   });
 
-  void onTap(BuildContext context) async {
+  void onTap(BuildContext context) {
+    if (customOnTap != null) {
+      customOnTap!();
+      return;
+    }
+
     if (type == CategoryType.movies) {
       Navigator.push(
         context,
@@ -50,12 +57,15 @@ class Tile extends StatelessWidget {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => BPVideoPlayer(streamUrl: streamUrl, name: name),
+          builder: (context) => BPVideoPlayer(
+            streamUrl: streamUrl,
+            name: name,
+            isLiveTV: true,
+          ),
         ),
       );
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return Focus(
