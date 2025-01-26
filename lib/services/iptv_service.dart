@@ -28,18 +28,19 @@ class TCategory {
 }
 
 class IptvService {
-  static const serverUrl = 'http://webhop.xyz:8080';
+  static const BE_SERVER_URL = 'http://localhost:3000';
   static final Dio _dio = Dio();
   static final Map<String, dynamic> _cache = {};
   static const Duration _cacheDuration = Duration(minutes: 15);
   static DateTime? _lastFetchTime;
 
+  static String? serverUrl = 'http://webhop.xyz:8080';
   static String? username;
   static String? password;
 
   static Future<void> loadCredentials() async {
     final credentials = await CredentialsService.getCredentials();
-    // serverUrl = credentials['serverUrl'];
+    serverUrl = credentials['serverUrl'];
     username = credentials['username'];
     password = credentials['password'];
   }
@@ -82,8 +83,26 @@ class IptvService {
     return movies.map((movie) => TMovie.fromJson(movie)).toList();
   }
 
+  static Future<String?> _fetchServerUrl(String username) async {
+    try {
+      final serverResponse = await _dio.get(
+        '$BE_SERVER_URL/api/users/$username',
+      );
+
+      return serverResponse.data?['serverUrl'];
+    } catch (e) {
+      debugPrint('Error fetching server URL: $e');
+      return null;
+    }
+  }
+
   static Future<bool> login(String username, String password) async {
     try {
+      final customServerUrl = await _fetchServerUrl(username);
+      if (customServerUrl != null) {
+        serverUrl = customServerUrl;
+      }
+
       final response = await _dio.post(
         '$serverUrl/player_api.php',
         queryParameters: {
@@ -99,7 +118,7 @@ class IptvService {
       if (response.statusCode == 200 &&
           response.data["user_info"]["auth"] == 1) {
         await CredentialsService.saveCredentials(
-          serverUrl: serverUrl,
+          serverUrl: serverUrl!,
           username: username,
           password: password,
         );
@@ -315,7 +334,7 @@ class IptvService {
       String epgChannelId, String categoryId) async {
     try {
       await loadCredentials();
-      const url = '$serverUrl/player_api.php';
+      final url = '$serverUrl/player_api.php';
       final response = await _dio.get(
         url,
         queryParameters: {
