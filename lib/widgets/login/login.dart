@@ -60,14 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     final success = await IptvService.login(username, password);
 
-    if (success && mounted) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const MoviesScreen(),
-        ),
-      );
-    } 
+    _handleSuccessOrError(success);
   }
 
   @override
@@ -204,7 +197,6 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
-      _temporaryDevLogin(),
     ]);
   }
 
@@ -228,7 +220,14 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.of(context).pop();
     }
 
+    _handleSuccessOrError(success);
+  }
+
+  _handleSuccessOrError(success) {
     if (!success && mounted) {
+      setState(() {
+        _autoLoginFailed = true;
+      });
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -277,18 +276,5 @@ class _LoginScreenState extends State<LoginScreen> {
         );
       }
     }
-  }
-
-  Widget _temporaryDevLogin() {
-    return TextButton(
-      onPressed: () {
-        _usernameController.text = '96298742369872';
-        _passwordController.text = '98726894723642';
-      },
-      child: const Text(
-        'DEV LOGIN',
-        style: TextStyle(color: Colors.grey),
-      ),
-    );
   }
 }
