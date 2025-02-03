@@ -103,6 +103,8 @@ class _BaseScreenState extends State<BaseScreen> {
                 backgroundColor: appBarColor,
                 selectedIndex: widget.currentIndex,
                 onDestinationSelected: (index) {
+                  if(widget.currentIndex == index) return;
+
                   if (index == 0) {
                     navigateToOtherScreen(context, const MoviesScreen());
                   } else if (index == 1) {
@@ -177,12 +179,20 @@ class _BaseScreenState extends State<BaseScreen> {
   }
 
   void navigateToOtherScreen(BuildContext context, Widget screen) {
-    if (context.mounted) {
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => screen),
-        (route) => false,
-      );
-    }
-  }
+  Navigator.pushReplacement(
+    context,
+    PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => screen,
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        return FadeTransition(
+          opacity: animation,
+          child: child,
+        );
+      },
+      transitionDuration: const Duration(milliseconds: 400),
+      reverseTransitionDuration: const Duration(milliseconds: 400),
+      maintainState: true,
+    ),
+  );
+}
 }

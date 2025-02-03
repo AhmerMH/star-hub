@@ -122,7 +122,7 @@ class Tile extends StatelessWidget {
                         name,
                         style: const TextStyle(
                           color: textColor,
-                          fontSize: 16,
+                          fontSize: 14,
                           fontWeight: FontWeight.bold,
                         ),
                         maxLines: 2,

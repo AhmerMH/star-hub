@@ -32,11 +32,9 @@ class _LoaderOverlayState extends State<LoaderOverlay>
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final isLargeScreen = size.width > 600 || size.height > 600;
 
-    final dotWidth = 7.0;
-    final dotHeight = 10.0;
+    const dotWidth = 7.0;
+    const dotHeight = 10.0;
     const dotSpacing = 4.0;
 
     return Container(

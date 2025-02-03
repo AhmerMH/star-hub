@@ -102,26 +102,28 @@ class _SearchScreenState extends State<SearchScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if ((_searchResults?['live'] ?? []).isNotEmpty)
                         CategoriesCompact(
                           categoryName: 'Live TV',
                           items: _searchResults?['live'] ?? [],
                           type: CategoryType.livetv,
                           noLimit: true,
+                          showNoResultsFound: (_searchResults?['live'] ?? []).isEmpty,
                         ),
-                      if ((_searchResults?['movies'] ?? []).isNotEmpty)
+                     
                         CategoriesCompact(
                           categoryName: 'Movies',
                           items: _searchResults?['movies'] ?? [],
                           type: CategoryType.movies,
                           noLimit: true,
+                          showNoResultsFound: (_searchResults?['movies'] ?? []).isEmpty,
                         ),
-                      if ((_searchResults?['series'] ?? []).isNotEmpty)
+
                         CategoriesCompact(
                           categoryName: 'Series',
                           items: _searchResults?['series'] ?? [],
                           type: CategoryType.series,
                           noLimit: true,
+                          showNoResultsFound: (_searchResults?['series'] ?? []).isEmpty,
                         ),
                       if ((_searchResults?['live'] ?? []).isEmpty &&
                           (_searchResults?['movies'] ?? []).isEmpty &&

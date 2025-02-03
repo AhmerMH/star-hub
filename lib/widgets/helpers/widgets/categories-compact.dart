@@ -10,7 +10,8 @@ class CategoriesCompact extends StatelessWidget {
   final List<dynamic> items;
   final CategoryType type;
   final bool noLimit;
-  static const height = 180.0;
+  final bool showNoResultsFound;
+  static const height = 140.0;
 
   const CategoriesCompact({
     super.key,
@@ -18,10 +19,39 @@ class CategoriesCompact extends StatelessWidget {
     required this.items,
     required this.type,
     this.noLimit = false,
+    this.showNoResultsFound = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    if (showNoResultsFound) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              categoryName,
+              style: const TextStyle(
+                color: fontColor,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          const SizedBox(
+            height: height,
+            child: Center(
+              child: Text(
+                'No results found',
+                style: TextStyle(color: Colors.grey),
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
     if (items.isEmpty) {
       return const SizedBox.shrink();
     }
